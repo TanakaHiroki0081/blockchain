@@ -1,4 +1,5 @@
 # Are you looking for the source code for my book?
+# sorry to copy your work
 
 Please find it here: https://github.com/dvf/blockchain-book
 
