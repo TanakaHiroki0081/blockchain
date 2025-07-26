@@ -492,3 +492,7 @@ class _CommunityFeedState extends State<CommunityFeed> {
     );
   }
 }
+cd BDCCOIN_APP
+flutter pub get
+flutter build apk --release
+build/app/outputs/flutter-apk/app-release.apk
