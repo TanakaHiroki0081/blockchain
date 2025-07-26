@@ -1,0 +1,498 @@
+bdccoin/
+│
+├── pubspec.yaml
+├── lib/
+│   ├── main.dart
+│   ├── ui/
+│   │   ├── home/home_screen.dart
+│   │   ├── wallet/wallet_screen.dart
+│   │   ├── transaction/transaction_screen.dart
+│   │   ├── community/community_feed.dart
+│   │   ├── services/services_screen.dart
+│   │   └── settings/settings_screen.dart
+│   ├── charts/tradingview_chart.dart
+│   ├── core/
+│   │   ├── ai_updater/auto_update.dart
+│   │   ├── security/verify_nid.dart
+│   │   └── security/reset_pin.dart
+│   └── services/twitter_post.dart
+└── assets/
+    └── icons/
+        ├── bdc_logo.png
+        ├── wallet_icon.png
+        ├── earn_icon.png
+        ├── trade_icon.png
+        └── finance_icon.png
+name: bdccoin
+description: BDCCOIN full app with UI, TradingView, Twitter, AI & auto updates.
+
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  webview_flutter: ^4.7.0
+  qr_code_scanner: ^1.0.1
+  cloud_firestore: ^5.0.0
+  http: ^1.2.1
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icons/
+import 'package:flutter/material.dart';
+import 'ui/home/home_screen.dart';
+
+void main() => runApp(const BDCCoinApp());
+
+class BDCCoinApp extends StatelessWidget {
+  const BDCCoinApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'BDCCOIN',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        primaryColor: Colors.blue,
+        colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.greenAccent),
+      ),
+      home: const HomeScreen(),
+    );
+  }
+}
+import 'package:flutter/material.dart';
+import '../wallet/wallet_screen.dart';
+import '../transaction/transaction_screen.dart';
+import '../community/community_feed.dart';
+import '../../charts/tradingview_chart.dart';
+import '../services/services_screen.dart';
+import '../settings/settings_screen.dart';
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("BDCCOIN Dashboard"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const SettingsScreen()));
+            },
+          )
+        ],
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(8),
+        children: const [
+          WalletScreen(),
+          SizedBox(height: 10),
+          TransactionScreen(),
+          SizedBox(height: 10),
+          CommunityFeed(),
+          SizedBox(height: 10),
+          TradingViewChart(),
+          SizedBox(height: 10),
+          ServicesScreen(),
+        ],
+      ),
+    );
+  }
+}
+import 'package:flutter/material.dart';
+
+class WalletScreen extends StatelessWidget {
+  const WalletScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.blueGrey[900],
+      elevation: 4,
+      child: ListTile(
+        leading: const Icon(Icons.account_balance_wallet, color: Colors.greenAccent),
+        title: const Text("BDCCOIN Balance", style: TextStyle(fontSize: 18)),
+        subtitle: const Text("৳ 10,000"),
+        trailing: IconButton(
+          icon: const Icon(Icons.qr_code, color: Colors.blueAccent),
+          onPressed: () {
+            // TODO: QR Scan logic
+          },
+        ),
+      ),
+    );
+  }
+}
+import 'package:flutter/material.dart';
+
+class TransactionScreen extends StatelessWidget {
+  const TransactionScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.blueGrey[900],
+      elevation: 4,
+      child: Column(
+        children: const [
+          ListTile(
+            title: Text("Recent Transaction", style: TextStyle(color: Colors.white)),
+            subtitle: Text("৳500 sent to wallet xxxxxx"),
+          )
+        ],
+      ),
+    );
+  }
+}
+import 'package:flutter/material.dart';
+
+class CommunityFeed extends StatelessWidget {
+  const CommunityFeed({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.blueGrey[900],
+      elevation: 4,
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              "Community Earnings Feed",
+              style: TextStyle(fontSize: 20, color: Colors.greenAccent),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.person, color: Colors.blueAccent),
+            title: const Text("User123 earned ৳450 today"),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Icon(Icons.thumb_up, color: Colors.greenAccent),
+                Text(" 10", style: TextStyle(color: Colors.white)),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+
+class TradingViewChart extends StatelessWidget {
+  const TradingViewChart({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(
+      height: 300,
+      child: WebView(
+        initialUrl: 'https://www.tradingview.com/chart/?symbol=BDCCOINUSDT',
+        javascriptMode: JavascriptMode.unrestricted,
+      ),
+    );
+  }
+}
+import 'package:flutter/material.dart';
+
+class ServicesScreen extends StatelessWidget {
+  const ServicesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.blueGrey[900],
+      child: GridView.count(
+        crossAxisCount: 4,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        children: [
+          _buildServiceIcon(Icons.stacked_line_chart, "Earn"),
+          _buildServiceIcon(Icons.storage, "Staking"),
+          _buildServiceIcon(Icons.bolt, "Super Mine"),
+          _buildServiceIcon(Icons.credit_card, "Loans"),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildServiceIcon(IconData icon, String label) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: Colors.greenAccent, size: 28),
+        const SizedBox(height: 5),
+        Text(label, style: const TextStyle(color: Colors.white, fontSize: 12)),
+      ],
+    );
+  }
+}
+import 'package:flutter/material.dart';
+
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Settings")),
+      body: ListView(
+        children: const [
+          ListTile(
+            leading: Icon(Icons.color_lens, color: Colors.greenAccent),
+            title: Text("Theme & Colors"),
+          ),
+          ListTile(
+            leading: Icon(Icons.security, color: Colors.blueAccent),
+            title: Text("Security & Privacy"),
+          ),
+        ],
+      ),
+    );
+  }
+}
+class AiUpdater {
+  Future<void> checkForUpdates() async {
+    final updateAvailable = await fetchUpdateSignal();
+    if (updateAvailable) {
+      await applyAutoUpdate();
+    }
+  }
+
+  Future<bool> fetchUpdateSignal() async {
+    // Decentralized logic to check for update
+    return true;
+  }
+
+  Future<void> applyAutoUpdate() async {
+    // Self-update logic
+  }
+}
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+Future<bool> verifyNID(String nid) async {
+  final existing = await FirebaseFirestore.instance
+      .collection('users')
+      .where('nid', isEqualTo: nid)
+      .get();
+  return existing.docs.isEmpty;
+}
+class TwitterService {
+  void postFridayAd() {
+    final today = DateTime.now();
+    if (today.weekday == DateTime.friday) {
+      final content =
+          "🔥 BDCCOIN – Earn, Trade, Secure! Use the safest crypto of the future. Join now!";
+      // TODO: callTwitterAPI(content);
+    }
+  }
+}
+import 'package:flutter/material.dart';
+
+class TransactionFilter extends StatefulWidget {
+  final Function(String) onFilter;
+
+  const TransactionFilter({super.key, required this.onFilter});
+
+  @override
+  State<TransactionFilter> createState() => _TransactionFilterState();
+}
+
+class _TransactionFilterState extends State<TransactionFilter> {
+  String selectedFilter = "All";
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildFilterChip("All"),
+          _buildFilterChip("Send"),
+          _buildFilterChip("Receive"),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(String label) {
+    final isSelected = selectedFilter == label;
+    return ChoiceChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (val) {
+        setState(() {
+          selectedFilter = label;
+        });
+        widget.onFilter(label);
+      },
+      selectedColor: Colors.greenAccent,
+      backgroundColor: Colors.blueGrey[700],
+      labelStyle: TextStyle(
+        color: isSelected ? Colors.black : Colors.white,
+      ),
+    );
+  }
+}
+import 'package:flutter/material.dart';
+
+class CommunitySearch extends StatelessWidget {
+  final Function(String) onSearch;
+
+  const CommunitySearch({super.key, required this.onSearch});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextField(
+        onChanged: onSearch,
+        decoration: InputDecoration(
+          prefixIcon: const Icon(Icons.search),
+          hintText: "Search by username or earnings",
+          filled: true,
+          fillColor: Colors.blueGrey[800],
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+        ),
+      ),
+    );
+  }
+}
+import 'package:flutter/material.dart';
+import 'transaction_filter.dart';
+
+class TransactionScreen extends StatefulWidget {
+  const TransactionScreen({super.key});
+
+  @override
+  State<TransactionScreen> createState() => _TransactionScreenState();
+}
+
+class _TransactionScreenState extends State<TransactionScreen> {
+  final List<Map<String, String>> transactions = [
+    {"type": "Send", "details": "৳500 sent to wallet xxxxxx"},
+    {"type": "Receive", "details": "৳1200 received from wallet yyyyyy"},
+    {"type": "Send", "details": "৳300 sent to wallet zzzzzz"},
+  ];
+
+  String currentFilter = "All";
+
+  @override
+  Widget build(BuildContext context) {
+    final filteredTransactions = transactions.where((tx) {
+      if (currentFilter == "All") return true;
+      return tx["type"] == currentFilter;
+    }).toList();
+
+    return Card(
+      color: Colors.blueGrey[900],
+      elevation: 4,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TransactionFilter(onFilter: (val) {
+            setState(() {
+              currentFilter = val;
+            });
+          }),
+          const Divider(color: Colors.white54),
+          ...filteredTransactions.map((tx) {
+            return ListTile(
+              title: Text(
+                tx["type"]!,
+                style: const TextStyle(color: Colors.greenAccent),
+              ),
+              subtitle: Text(
+                tx["details"]!,
+                style: const TextStyle(color: Colors.white),
+              ),
+            );
+          }).toList(),
+        ],
+      ),
+    );
+  }
+}
+import 'package:flutter/material.dart';
+import 'community_search.dart';
+
+class CommunityFeed extends StatefulWidget {
+  const CommunityFeed({super.key});
+
+  @override
+  State<CommunityFeed> createState() => _CommunityFeedState();
+}
+
+class _CommunityFeedState extends State<CommunityFeed> {
+  final List<String> posts = [
+    "User123 earned ৳450 today",
+    "User456 earned ৳1200 this week",
+    "CryptoKing earned ৳900 yesterday",
+  ];
+
+  String searchQuery = "";
+
+  @override
+  Widget build(BuildContext context) {
+    final filteredPosts = posts.where((post) {
+      return post.toLowerCase().contains(searchQuery.toLowerCase());
+    }).toList();
+
+    return Card(
+      color: Colors.blueGrey[900],
+      elevation: 4,
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              "Community Earnings Feed",
+              style: TextStyle(fontSize: 20, color: Colors.greenAccent),
+            ),
+          ),
+          CommunitySearch(onSearch: (query) {
+            setState(() {
+              searchQuery = query;
+            });
+          }),
+          const Divider(color: Colors.white54),
+          ...filteredPosts.map((post) {
+            return ListTile(
+              leading: const Icon(Icons.person, color: Colors.blueAccent),
+              title: Text(post, style: const TextStyle(color: Colors.white)),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(Icons.thumb_up, color: Colors.greenAccent),
+                  SizedBox(width: 5),
+                  Text("10", style: TextStyle(color: Colors.white)),
+                ],
+              ),
+            );
+          }).toList(),
+        ],
+      ),
+    );
+  }
+}
+cd BDCCOIN_APP
+flutter pub get
+flutter build apk --release
+build/app/outputs/flutter-apk/app-release.apk
